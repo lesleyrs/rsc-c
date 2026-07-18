@@ -42,7 +42,7 @@ static void worldlist_set_defaults(void) {
 
     strcpy(list[3].name, "localhost");
     strcpy(list[3].host, "localhost");
-    list[3].port = 43594;
+    list[3].port = USE_WEBSOCKS ? 43595 : 43594;
     strcpy(list[3].rsa_exponent, "81f390b2cf8ca7039ee507975951d5a0b15a87bf8b3f99c966834118c50fd94d");
     strcpy(list[3].rsa_modulus, "88c38748a58228f7261cdc340b5691d7d0975dee0ecdb717609e6bf971eb3fe723ef9d130e4686813739768ad9472eb46d8bfcc042c1a5fcb05e931f632eea5d");
 }
