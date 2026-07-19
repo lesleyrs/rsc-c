@@ -10,6 +10,19 @@ double atof( const char * nptr ) {
     return JS_parseFloat(nptr, strlen(nptr));
 }
 
+static bool onmousewheel(void* userdata, double deltaY) {
+    mudclient *mud = userdata;
+    if (mud->options->mouse_wheel) {
+        mud->mouse_scroll_delta = (deltaY > 0 ? -1 : 1);
+
+        // TODO add horizontal scroll to wasmlite but it's breaking change
+        // int direction = deltaX > 0 ? 1 : -1;
+        // mud->camera_rotation = (mud->camera_rotation + (direction * 3)) & 0xff;
+    }
+    return 0;
+}
+
+
 static int mouse_x, mouse_y;
 static bool onmousemove(void *userdata, int x, int y) {
     mudclient *mud = userdata;
@@ -144,7 +157,7 @@ static bool onkey(void *userdata, bool pressed, int key, int code, int modifiers
 void mudclient_start_application(mudclient *mud, char *title) {
     JS_setTitle(title);
     JS_createCanvas(mud->game_width, mud->game_height, "2d");
-    JS_addMouseEventListener(mud, onmouse, onmousemove, NULL);
+    JS_addMouseEventListener(mud, onmouse, onmousemove, onmousewheel);
     JS_addKeyEventListener(mud, onkey);
 }
 
