@@ -23,6 +23,24 @@ static int winsock_init = 0;
 #define ioctl net_ioctl
 #endif
 
+#if defined(WASM)
+#include <js/websocket.h>
+#define close closesocket
+
+static void onopen(void *userdata) {
+    PacketStream *stream = userdata;
+    mud_log("DEBUG: socket %d open\n", stream->socket);
+}
+static void onerror(void *userdata) {
+    PacketStream *stream = userdata;
+    mud_error("DEBUG: socket %d error\n", stream->socket);
+}
+static void onclose(void *userdata) {
+    PacketStream *stream = userdata;
+    mud_log("DEBUG: socket %d closed\n", stream->socket);
+}
+#endif
+
 #if 0
 char *SPOOKY_THREAT =
     "All RuneScape code and data, including this message, are copyright 2003 "
@@ -88,6 +106,45 @@ int getsockopt(int s, int level, int optname, void *optval, socklen_t *optlen)
 }
 #endif
 
+#if defined(WASM)
+void packet_stream_new(PacketStream *packet_stream, mudclient *mud) {
+    memset(packet_stream, 0, sizeof(PacketStream));
+
+    packet_stream->max_read_tries = 1000;
+
+#ifdef REVISION_177
+    /*packet_stream->decode_key = 3141592;
+    packet_stream->encode_key = 3141592;*/
+#endif
+
+#ifndef NO_RSA
+    if (rsa_init(&packet_stream->rsa,
+        mud->rsa_exponent, mud->rsa_modulus) < 0) {
+            mud_error("rsa_init failed\n");
+            exit(1);
+    }
+#endif
+
+    char url[PATH_MAX];
+    bool secured = false;
+    // NOTE instead of this it should be set through config or something, but the emscripten port always uses wss anyway
+    if (strcmp(mud->server, "localhost") != 0) {
+        secured = true;
+    }
+    sprintf(url, "%s://%s:%d", secured ? "wss" : "ws", mud->server, mud->port);
+
+    packet_stream->socket = socket();
+    int ret = connect(packet_stream->socket, url, packet_stream, onopen, NULL, onerror, onclose);
+
+    if (ret < 0) {
+        return;
+    }
+
+    packet_stream->closed = 0;
+    packet_stream->packet_end = 3;
+    packet_stream->packet_max_length = 5000;
+}
+#else
 void packet_stream_new(PacketStream *packet_stream, mudclient *mud) {
 #ifdef WIN32
     if (!winsock_init) {
@@ -288,6 +345,7 @@ void packet_stream_new(PacketStream *packet_stream, mudclient *mud) {
     packet_stream->packet_end = 3;
     packet_stream->packet_max_length = 5000;
 }
+#endif
 
 int packet_stream_available_bytes(PacketStream *packet_stream, int length) {
     if (packet_stream->available_length >= length) {
@@ -375,7 +433,7 @@ int packet_stream_read_bytes(PacketStream *packet_stream, int length,
 int packet_stream_write_bytes(PacketStream *packet_stream, int8_t *buffer,
                               int offset, int length) {
     if (!packet_stream->closed) {
-#if defined(WIN32) || defined(__SWITCH__)
+#if defined(WIN32) || defined(__SWITCH__) || defined(WASM)
         return send(packet_stream->socket, buffer + offset, length, 0);
 #else
         return write(packet_stream->socket, buffer + offset, length);

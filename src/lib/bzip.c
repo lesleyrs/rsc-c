@@ -31,6 +31,10 @@
 
 #include "bzip.h"
 
+#ifdef WASM
+#include <js/syscalls.h>
+#endif
+
 char BZIP_HEADER[] = {'B', 'Z', 'h', '1'};
 
 char *bunzip_errors[] = {NULL,
@@ -54,7 +58,9 @@ static uint32_t get_bits(bunzip_data *bd, uint8_t bits_wanted) {
         if (bd->inbufPos == bd->inbufCount) {
             if ((bd->inbufCount = read(bd->in_fd, bd->inbuf, IOBUF_SIZE)) <=
                 0) {
+#ifndef WASM
                 longjmp(bd->jmpbuf, RETVAL_UNEXPECTED_INPUT_EOF);
+#endif
             }
 
             bd->inbufPos = 0;
@@ -93,11 +99,13 @@ static int get_next_block(bunzip_data *bd) {
     selectors = bd->selectors;
 
     /* Reset longjmp I/O error handling */
+#ifndef WASM
     i = setjmp(bd->jmpbuf);
 
     if (i) {
         return i;
     }
+#endif
 
     /* Read in header signature and CRC, then validate signature.
        (last block signature means CRC is for whole file, return now) */
@@ -640,11 +648,13 @@ static int start_bunzip(bunzip_data **bdp, int in_fd, uint8_t *inbuf, int len) {
     }
 
     /* Setup for I/O error handling via longjmp */
+#ifndef WASM
     i = setjmp(bd->jmpbuf);
 
     if (i) {
         return i;
     }
+#endif
 
     /* Ensure that file starts with "BZh['1'-'9']." */
     i = get_bits(bd, 32);

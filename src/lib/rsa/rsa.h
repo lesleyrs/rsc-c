@@ -3,7 +3,14 @@
 
 /* from RSC Sundae. Public domain. */
 
-#ifdef WITH_RSA_OPENSSL
+// TODO add libtom as option
+
+#ifdef WITH_RSA_JS
+struct rsa {
+    const char *exponent;
+    const char *modulus;
+};
+#elif defined(WITH_RSA_OPENSSL)
 #include <openssl/bn.h>
 
 struct rsa {

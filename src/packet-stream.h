@@ -3,10 +3,12 @@
 
 #include <stdint.h>
 #include <stdio.h>
-#include <unistd.h>
-
 #include <errno.h>
+
+#ifndef WASM
+#include <unistd.h>
 #include <fcntl.h>
+#endif
 
 #ifdef WII
 #include <network.h>
@@ -15,6 +17,7 @@
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #else
+#ifndef WASM
 #include <arpa/inet.h>
 #include <netdb.h>
 #include <netinet/in.h>
@@ -22,6 +25,7 @@
 #include <sys/ioctl.h>
 #include <sys/socket.h>
 #include <sys/types.h>
+#endif
 #endif
 #endif
 

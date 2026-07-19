@@ -86,7 +86,7 @@ void mudclient_handle_confirm_input(mudclient *mud) {
             options_set_vanilla(mud->options);
             mudclient_sync_options_panels(mud);
 
-#if !defined(WII) && !defined(_3DS)
+#if !defined(WII) && !defined(_3DS) && !defined(WASM)
 #ifdef RENDER_SW
 #ifndef SDL12
             SDL_RestoreWindow(mud->window);

@@ -1,7 +1,8 @@
 #include "worldlist.h"
 #include <stdio.h>
 
-#ifdef EMSCRIPTEN
+// both WASM and EMSCRIPTEN
+#ifdef __wasm
 #define USE_WEBSOCKS 1
 #else
 #define USE_WEBSOCKS 0

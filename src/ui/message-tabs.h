@@ -2,7 +2,9 @@
 #define _H_MESSAGE_TABS
 
 #include <string.h>
+#ifndef WASM
 #include <strings.h>
+#endif
 
 #define MESSAGE_HISTORY_LENGTH 5
 #define MESSAGE_FLASH_TIME 200

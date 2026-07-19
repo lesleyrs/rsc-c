@@ -120,6 +120,12 @@ note OS must have comctl32, winsock 2, and msvctr
 
 on windows 95 might need to install ws2setup.exe, 401comupd.exe, and find a copy of msvctr.dll
 
+## build (web with clang)
+install clang, output depends on ./cache dir and ./index.html from wasmlite repo
+
+    $ make -f Makefile.wasm
+    $ python3 -m http.server 1337 # @ http://localhost:1337/?mudclient
+
 ## build (web)
 
 install and activate

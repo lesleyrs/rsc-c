@@ -170,6 +170,7 @@ void mudclient_new(mudclient *mud) {
 
 void mudclient_resize(mudclient *mud) {
 #if !defined(WII) && !defined(_3DS)
+#ifndef WASM
     SDL_FreeSurface(mud->screen);
     SDL_FreeSurface(mud->pixel_surface);
 
@@ -188,10 +189,22 @@ void mudclient_resize(mudclient *mud) {
     }
 #endif
 #endif
+#endif // WASM
 
+#ifdef WASM
+    int surface_width = mud->game_width;
+    int surface_height = mud->game_height;
+
+    free(mud->pixel_surface);
+    mud->pixel_surface = calloc(1, sizeof(Surface));
+    mud->pixel_surface->pixels = malloc(surface_width * surface_height * 4);
+    mud->pixel_surface->w = surface_width;
+    mud->pixel_surface->h = surface_height;
+#else
     mud->pixel_surface =
         SDL_CreateRGBSurface(0, surface_width, surface_height, 32, 0xff0000,
                              0x00ff00, 0x0000ff, 0);
+#endif
 
     if (mud->surface != NULL) {
 #ifdef RENDER_SW
@@ -5012,7 +5025,8 @@ void mudclient_on_resize(mudclient *mud) {
     int new_width = MUD_WIDTH;
     int new_height = MUD_HEIGHT;
 
-#if !defined(_3DS) && !defined(WII) && !defined(SDL12)
+    // TODO add make WASM match emscripten here? but not needed
+#if !defined(_3DS) && !defined(WII) && !defined(SDL12) && !defined(WASM)
 #ifdef RENDER_GL
     SDL_Window *window = mud->gl_window;
 #else

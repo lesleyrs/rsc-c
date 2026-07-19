@@ -3,7 +3,9 @@
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
+#ifndef WASM
 #include <strings.h>
+#endif
 
 #include "../mudclient.h"
 

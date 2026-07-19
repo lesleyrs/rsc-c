@@ -1,0 +1,3 @@
+-DWASM
+--target=wasm32
+--sysroot=../../wasmlite/libc

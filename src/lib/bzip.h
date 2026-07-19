@@ -2,12 +2,14 @@
 #define _H_BZIP
 
 #include <limits.h>
+#ifndef WASM
 #include <setjmp.h>
+#include <unistd.h>
+#endif
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
 
 /* Constants for huffman coding */
 #define MAX_GROUPS 6
@@ -61,7 +63,9 @@ typedef struct {
     struct group_data groups[MAX_GROUPS]; /* huffman coding tables */
 
     /* For I/O error handling */
+#ifndef WASM
     jmp_buf jmpbuf;
+#endif
 } bunzip_data;
 
 extern char BZIP_HEADER[];

@@ -1,5 +1,11 @@
 #include "utility.h"
 
+#ifdef WASM
+// PATH_MAX
+#include "mudclient.h"
+#include <js/glue.h>
+#endif
+
 #if defined(__unix__) || defined(__unix) ||                                    \
     (defined(__APPLE__) && defined(__MACH__))
 #include <sys/stat.h>
@@ -133,7 +139,7 @@ void mud_log(char *format, ...) {
     va_list args = {0};
     va_start(args, format);
 
-#if !defined(_3DS) && !defined(WII) && !defined(SDL12)
+#if !defined(_3DS) && !defined(WII) && !defined(SDL12) && !defined(WASM)
     SDL_LogMessageV(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_INFO, format,
                     args);
 #else
@@ -147,7 +153,7 @@ void mud_error(char *format, ...) {
     va_list args = {0};
     va_start(args, format);
 
-#if !defined(_3DS) && !defined(WII) && !defined(SDL12)
+#if !defined(_3DS) && !defined(WII) && !defined(SDL12) && !defined(WASM)
     SDL_LogMessageV(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_ERROR,
                     format, args);
 #else
@@ -642,7 +648,11 @@ void format_confirm_amount(int amount, char *formatted) {
 
 int get_ticks(void) {
 #if !defined(WII) && !defined(_3DS)
+#ifdef WASM
+    return JS_performanceNow();
+#else
     return SDL_GetTicks();
+#endif
 #endif
 
 #ifdef _3DS
@@ -660,6 +670,8 @@ void delay_ticks(int ticks) {
 #if !defined(WII) && !defined(_3DS)
 #ifdef EMSCRIPTEN
     emscripten_sleep(ticks);
+#elif defined(WASM)
+    JS_setTimeout(ticks);
 #else
     SDL_Delay(ticks);
 #endif

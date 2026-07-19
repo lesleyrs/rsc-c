@@ -66,7 +66,7 @@
      GX_TRANSFER_SCALING(GX_TRANSFER_SCALE_NO))
 #endif
 
-#if !defined(WII) && !defined(_3DS)
+#if !defined(WII) && !defined(_3DS) && !defined(WASM)
 #ifdef __SWITCH__
 #include <SDL2/SDL.h>
 #else
@@ -386,7 +386,9 @@ void mudclient_3ds_gl_frame_end();
 #ifdef SDL12
 void get_sdl_keycodes(SDL_keysym *keysym, char *char_code, int *code);
 #else
+#ifndef WASM
 void get_sdl_keycodes(SDL_Keysym *keysym, char *char_code, int *code);
+#endif
 #endif
 #endif
 
@@ -514,6 +516,9 @@ struct mudclient {
     C3D_RenderTarget *_3ds_gl_offscreen_render_target;
 #endif
 #else
+#ifdef WASM
+    SDL_Surface *pixel_surface;
+#else
 #ifndef SDL12
     SDL_Window *window;
 #endif
@@ -528,6 +533,7 @@ struct mudclient {
     SDL_Cursor *default_cursor;
     SDL_Cursor *hand_cursor;
     int is_hand_cursor;
+#endif // WASM
 #endif
 
     Options *options;

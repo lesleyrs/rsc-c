@@ -1,5 +1,9 @@
 #include "scene.h"
 
+#if defined(WASM)
+#define alloca __builtin_alloca
+#endif
+
 #if defined(__GNUC__)
 #define likely(x)	(__builtin_expect(((x) != 0), 1))
 #define unlikely(x)	(__builtin_expect(((x) != 0), 0))
