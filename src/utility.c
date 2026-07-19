@@ -647,12 +647,12 @@ void format_confirm_amount(int amount, char *formatted) {
 }
 
 int get_ticks(void) {
-#if !defined(WII) && !defined(_3DS)
-#ifdef WASM
-    return JS_performanceNow();
-#else
+#if !defined(WII) && !defined(_3DS) && !defined(WASM)
     return SDL_GetTicks();
 #endif
+
+#ifdef WASM
+    return JS_performanceNow();
 #endif
 
 #ifdef _3DS
