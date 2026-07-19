@@ -14,8 +14,8 @@ SRC = $(wildcard src/*.c src/lib/*.c src/lib/rsa/*.c src/ui/*.c src/custom/*.c)
 OBJ = $(SRC:.c=.o)
 # remove -fwrapv when code is converted to use unsigned ints or overflow checks are added
 CFLAGS += -fwrapv -std=c99 -DWITH_RSA_JS -DWASM --sysroot=$(LIBC)
-LDFLAGS += --sysroot=$(LIBC) -nodefaultlibs -lc -Wl,--export-table -Wl,--stack-first -Wl,-z,stack-size=$(shell echo $$((1 << 20))) 
-# -Wl,--export=malloc 
+LDFLAGS += --sysroot=$(LIBC) -nodefaultlibs -lc -Wl,--export-table -Wl,--stack-first -Wl,-z,stack-size=$(shell echo $$((1 << 20)))
+# -Wl,--export=malloc
 
 ifeq ($(RENDER_GL), 1)
 SRC += $(wildcard src/gl/*.c src/gl/textures/*.c)
