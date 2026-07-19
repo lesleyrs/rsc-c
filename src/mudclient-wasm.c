@@ -3,8 +3,6 @@
 #include <js/glue.h>
 #include <js/dom_pk_codes.h>
 
-// TODO play sfx
-
 // NOTE: temp pdclib fix
 double atof( const char * nptr ) {
     return JS_parseFloat(nptr, strlen(nptr));

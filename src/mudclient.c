@@ -1,5 +1,9 @@
 #include "mudclient.h"
 
+#ifdef WASM
+#include <js/audio.h>
+#endif
+
 #ifdef EMSCRIPTEN
 /* clang doesn't know what triple equals is, understandably */
 /* clang-format off */
@@ -5421,6 +5425,12 @@ void mudclient_play_sound(mudclient *mud, char *name) {
 #elif defined(_3DS)
     mud->_3ds_sound_position = 0;
     mud->_3ds_sound_length = length * 2;
+#elif defined(WASM)
+    float pcm_out[PCM_LENGTH];
+    for (int i = 0; i < PCM_LENGTH; i++) {
+        pcm_out[i] = (float)mud->pcm_out[i] / (INT16_MAX + 1);
+    }
+    JS_playPCM(pcm_out, 1, length, SAMPLE_RATE);
 #elif defined(SDL_VERSION_ATLEAST)
 #if SDL_VERSION_ATLEAST(2, 0, 4)
     SDL_PauseAudio(0);
