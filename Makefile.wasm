@@ -1,6 +1,7 @@
 # CC = $(HOME)/emsdk/upstream/bin/clang --target=wasm32
 CC = clang --target=wasm32
 DEBUG ?= 0
+OFAST ?= 0
 
 LIBC = $(HOME)/dev/wasmlite/libc
 
@@ -25,16 +26,22 @@ else
 CFLAGS += -DRENDER_SW
 endif
 
+ifeq ($(OFAST),1)
+OPT = -O3
+else
+OPT = -Oz
+endif
+
 ifeq ($(DEBUG), 1)
 CFLAGS += -Wall -Wextra -pedantic -g
 else
-CFLAGS += -Oz -ffast-math -flto
+CFLAGS += $(OPT) -ffast-math -flto
 endif
 
 mudclient.wasm: $(OBJ)
 	$(CC) -o $@ $^ $(LDFLAGS)
 ifeq ($(DEBUG),0)
-	wasm-opt $@ -o $@ -Oz
+	wasm-opt $@ -o $@ $(OPT)
 	wasm-strip $@
 else
 	$(WASM_SOURCEMAP) $@ -w $@ -p $(CURDIR) -s -u ./$@.map -o $@.map --dwarfdump=$(DWARFDUMP)
