@@ -258,16 +258,17 @@ void surface_draw(Surface *surface) {
 #elif defined(WASM)
     int width = mud->pixel_surface->w;
     int height = mud->pixel_surface->h;
-    uint32_t *pixels = (uint32_t*)mud->pixel_surface->pixels;
+    uint32_t *pixels = mud->pixel_surface->pixels;
     for (int row = 0; row < height; row++) {
         for (int col = 0; col < width; col++) {
             uint32_t pixel = pixels[row * width + col];
             // js canvas needs red blue swap + alpha
             pixel = ((pixel >> 16) & 0xff) | (pixel & 0xff00) | ((pixel & 0xff) << 16) | 0xff000000;
-            pixels[row * width + col] = pixel;
+            // draw to screen buffer as pixel_surface doesn't always update (EG connection lost) so colors would keep swapping
+            mud->screen->pixels[row * width + col] = pixel;
         }
     }
-    JS_setPixelsAlpha(pixels);
+    JS_setPixelsAlpha(mud->screen->pixels);
 #else
     if (mud->window != NULL) {
         SDL_BlitScaled(mud->pixel_surface, NULL, mud->screen, NULL);

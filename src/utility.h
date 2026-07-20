@@ -32,7 +32,7 @@
 #include <js/glue.h>
 
 typedef struct {
-    int *pixels;
+    uint32_t *pixels;
     int w, h;
 } SDL_Surface;
 

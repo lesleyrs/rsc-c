@@ -516,15 +516,12 @@ struct mudclient {
     C3D_RenderTarget *_3ds_gl_offscreen_render_target;
 #endif
 #else
-#ifdef WASM
+    SDL_Surface *screen;
     SDL_Surface *pixel_surface;
-#else
+#ifndef WASM
 #ifndef SDL12
     SDL_Window *window;
 #endif
-
-    SDL_Surface *screen;
-    SDL_Surface *pixel_surface;
 
 #if defined(RENDER_GL) && !defined(SDL12)
     SDL_Window *gl_window;

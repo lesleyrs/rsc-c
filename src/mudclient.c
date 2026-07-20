@@ -199,9 +199,15 @@ void mudclient_resize(mudclient *mud) {
     int surface_width = mud->game_width;
     int surface_height = mud->game_height;
 
+    free(mud->screen);
+    mud->screen = calloc(1, sizeof(Surface));
+    mud->screen->pixels = malloc(surface_width * surface_height * sizeof(int));
+    mud->screen->w = surface_width;
+    mud->screen->h = surface_height;
+
     free(mud->pixel_surface);
     mud->pixel_surface = calloc(1, sizeof(Surface));
-    mud->pixel_surface->pixels = malloc(surface_width * surface_height * 4);
+    mud->pixel_surface->pixels = malloc(surface_width * surface_height * sizeof(int));
     mud->pixel_surface->w = surface_width;
     mud->pixel_surface->h = surface_height;
 #else
