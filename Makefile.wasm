@@ -5,9 +5,9 @@ DEBUG ?= 0
 LIBC = $(HOME)/dev/wasmlite/libc
 
 WASM_SOURCEMAP = $(HOME)/dev/tools/emscripten/tools/wasm-sourcemap.py
-DWARFDUMP = /usr/bin/llvm-dwarfdump
-# NOTE: use this if your systems llvm-dwarfdump is too outdated for wasm-sourcemap.py (from emsdk repo)
-# DWARFDUMP = $(HOME)/emsdk/upstream/bin/llvm-dwarfdump
+# NOTE: system llvm-dwarfdump might be too outdated for wasm-sourcemap.py, so we use emsdk repo
+DWARFDUMP = $(HOME)/emsdk/upstream/bin/llvm-dwarfdump
+# DWARFDUMP = /usr/bin/llvm-dwarfdump
 
 # RENDER_GL ?= 1
 
