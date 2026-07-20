@@ -13,7 +13,7 @@ static bool onmousewheel(void* userdata, double deltaY) {
     if (mud->options->mouse_wheel) {
         mud->mouse_scroll_delta = (deltaY > 0 ? -1 : 1);
 
-        // TODO add horizontal scroll to wasmlite but it's breaking change
+        // TODO add horizontal scroll to wasmlite but i'm unable to test it
         // int direction = deltaX > 0 ? 1 : -1;
         // mud->camera_rotation = (mud->camera_rotation + (direction * 3)) & 0xff;
     }
