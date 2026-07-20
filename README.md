@@ -128,6 +128,10 @@ point the LIBC make variable at wasmlite/libc directory and then:
     $ make -f Makefile.wasm
     $ python3 -m http.server 1337 # @ http://localhost:1337/?mudclient
 
+for local rscsundae servers: set world to localhost, install websockify and run:
+
+    $ websockify 43595 localhost:43594
+
 ## build (web)
 
 install and activate
