@@ -5434,7 +5434,7 @@ void mudclient_play_sound(mudclient *mud, char *name) {
 #elif defined(WASM)
     float pcm_out[PCM_LENGTH];
     for (int i = 0; i < PCM_LENGTH; i++) {
-        pcm_out[i] = (float)mud->pcm_out[i] / (INT16_MAX + 1);
+        pcm_out[i] = (float)mud->pcm_out[i] / (1 << 15);
     }
     JS_playPCM(pcm_out, 1, length, SAMPLE_RATE);
 #elif defined(SDL_VERSION_ATLEAST)
