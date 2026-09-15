@@ -132,6 +132,8 @@ for local rscsundae servers: set world to localhost, install websockify and run:
 
     $ websockify 43595 localhost:43594
 
+TODO: fix crash when walking around ice mountain on max zoom out
+
 ## build (web)
 
 install and activate
