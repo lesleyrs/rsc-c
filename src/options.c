@@ -228,7 +228,7 @@ void options_save(Options *options) {
         return;
     }
 
-    int file_length = UINT16_MAX + 1;
+    int file_length = 1 << 16;
     char *file_buffer = calloc(1, file_length);
 
     sprintf(file_buffer, OPTIONS_INI_TEMPLATE,
