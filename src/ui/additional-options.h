@@ -3,8 +3,13 @@
 
 #include "../mudclient.h"
 
+#ifdef __NDS__
+#define ADDITIONAL_OPTIONS_WIDTH MUD_WIDTH
+#define ADDITIONAL_OPTIONS_HEIGHT MUD_HEIGHT
+#else
 #define ADDITIONAL_OPTIONS_WIDTH 320
 #define ADDITIONAL_OPTIONS_HEIGHT 224
+#endif
 
 /* tabs */
 #define ADDITIONAL_OPTIONS_TAB_HEIGHT 24

@@ -6,7 +6,7 @@ Isaac Eggsampler. compatible with [rscsundae](https://git.sr.ht/~stormy/rscsunda
 [openrsc](https://rsc.vet/) and 2003scape.
 
 prominent new features include:
-* native ports for 3ds, switch, wii, web browser and desktop
+* native ports for dsi, 3ds, switch, wii, web browser and desktop
 * opengl/webgl renderer with customizable
 [field of view](https://en.wikipedia.org/wiki/Field_of_view)
 * dynamic resizable mode with interface scaling and new minimum resolution of
@@ -15,6 +15,22 @@ prominent new features include:
 * [runescape classic wiki](https://classic.runescape.wiki/) button
 * bank interface with scrollbar and search
 * [...and more! ](https://github.com/2003scape/rsc-c#options)
+
+### controls (dsi):
+
+NOTE some extra mem: surface_draw_sprite_reversed minimap, MODEL_COUNT, TERRAIN_MAX_VERTICES, scene_new values (based on lowmem)
+
+TODO options/world cfg not loaded and reduced worldlist size, maybe use dldi or sd filesystem not nitrofs
+TODO add ABXY buttons, maybe allow changing pitch scene_set_camera
+
+missing features: textures (need 4mb or extended apply_toonscape/toonscape_avoid_load all), forced lowmem + f2p (no sound), no roofs
+
+* d-pad/circle pad to control camera
+* touch screen for mouse input
+* hold L whilst tapping touch screen for right click
+* start to toggle on-screen keyboard
+* select to toggle interlacing
+* R to print memory usage to console
 
 ### controls (3ds):
 
@@ -160,6 +176,16 @@ locally. enable LLE sound for sound-effects support. on real hardware you can
 also use a USB keyboard and mouse.
 
 see `./build-wii.sh` for building for Wii.
+
+## build (dsi)
+
+install
+[nds-dev package in devkitPro](https://devkitpro.org/wiki/Getting_Started),
+[melonDS](https://melonds.kuribo64.net/downloads.php) to test locally.
+
+to boot in melonDS you need to set emulation to DSi, set bios/firmware/nand paths + enable sd card, and go to firmware settings > override settings from external firmware
+
+run `make -f nds.mk -j$(nproc) -B` for building DSi.
 
 ## build (3ds)
 

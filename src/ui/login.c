@@ -86,8 +86,12 @@ void mudclient_create_login_panels(mudclient *mud) {
     if (mud->options->show_additional_options) {
         int button_x = (is_compact ? MUD_MIN_WIDTH : MUD_VANILLA_WIDTH) - 36;
 
+#ifdef __NDS__
+        int button_y = 23; // button height + 3
+#else
         int button_y =
             is_compact ? MUD_MIN_HEIGHT - 24 : MUD_VANILLA_HEIGHT - 32;
+#endif
 
         panel_add_button_background(mud->panel_login_welcome, button_x,
                                     button_y, 60, 20);

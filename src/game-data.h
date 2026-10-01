@@ -156,7 +156,8 @@ struct MudConfig {
     int string_offset;
     int offset;
 
-    char *model_name[5000];
+    #define MODEL_COUNT 5000
+    char *model_name[MODEL_COUNT];
 };
 
 extern struct MudConfig game_data;

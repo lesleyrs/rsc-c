@@ -463,7 +463,11 @@ void game_model_set_light_dir(GameModel *game_model, int x, int y, int z) {
     game_model->light_direction_x = x;
     game_model->light_direction_y = y;
     game_model->light_direction_z = z;
+#ifdef __NDS__
+    game_model->light_direction_magnitude = (int)hw_sqrtf(x * x + y * y + z * z);
+#else
     game_model->light_direction_magnitude = (int)sqrt(x * x + y * y + z * z);
+#endif
 
     game_model_light(game_model);
 }
@@ -736,8 +740,13 @@ void game_model_get_face_normals(GameModel *game_model, int16_t *vertex_x,
         }
 
         int normal_magnitude =
+#ifdef __NDS__
+            256 * hw_sqrtf(normal_x * normal_x + normal_y * normal_y +
+                       normal_z * normal_z);
+#else
             256 * sqrt(normal_x * normal_x + normal_y * normal_y +
                        normal_z * normal_z);
+#endif
 
         if (normal_magnitude <= 0) {
             normal_magnitude = 1;

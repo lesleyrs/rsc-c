@@ -133,7 +133,7 @@ void mud_log(char *format, ...) {
     va_list args = {0};
     va_start(args, format);
 
-#if !defined(_3DS) && !defined(WII) && !defined(SDL12)
+#if !defined(_3DS) && !defined(WII) && !defined(SDL12) && !defined(__NDS__)
     SDL_LogMessageV(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_INFO, format,
                     args);
 #else
@@ -147,7 +147,7 @@ void mud_error(char *format, ...) {
     va_list args = {0};
     va_start(args, format);
 
-#if !defined(_3DS) && !defined(WII) && !defined(SDL12)
+#if !defined(_3DS) && !defined(WII) && !defined(SDL12) && !defined(__NDS__)
     SDL_LogMessageV(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_ERROR,
                     format, args);
 #else
@@ -640,9 +640,33 @@ void format_confirm_amount(int amount, char *formatted) {
     }
 }
 
+#ifdef __NDS__
+static inline
+u32 timerTicks2msec64(u64 ticks) {
+	return ticks*1000/BUS_CLOCK;
+}
+#endif
+
 int get_ticks(void) {
-#if !defined(WII) && !defined(_3DS)
+#if !defined(WII) && !defined(_3DS) && !defined(__NDS__)
     return SDL_GetTicks();
+#endif
+
+#ifdef __NDS__
+#if 1
+    static u32 last_ticks;
+    static u64 accum_ticks;
+
+    u32 now = cpuGetTiming();
+    u32 delta = now - last_ticks;
+    last_ticks = now;
+
+    accum_ticks += delta;
+
+    return timerTicks2msec64(accum_ticks);
+#else
+    return timerTicks2msec(cpuGetTiming()); // NOTE this only lasts 128 seconds until overflow (u32 max / ticks per sec)
+#endif
 #endif
 
 #ifdef _3DS
@@ -657,7 +681,7 @@ int get_ticks(void) {
 }
 
 void delay_ticks(int ticks) {
-#if !defined(WII) && !defined(_3DS)
+#if !defined(WII) && !defined(_3DS) && !defined(__NDS__)
 #ifdef EMSCRIPTEN
     emscripten_sleep(ticks);
 #else
@@ -673,7 +697,8 @@ void delay_ticks(int ticks) {
         ;*/
 #endif
 
-#ifdef WII
+#if defined(WII) || defined(__NDS__)
+    // TODO: swiIntrWait with timers would be preferred to not busy wait for NDS
     int end = get_ticks() + ticks;
 
     while (get_ticks() != end)

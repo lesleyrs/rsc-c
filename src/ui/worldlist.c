@@ -15,7 +15,7 @@ struct server_type {
     char rsa_modulus[512];
 };
 
-static struct server_type list[256] = {0};
+static struct server_type list[WORLDLIST_SIZE] = {0};
 
 static void worldlist_set_defaults(void);
 static void worldlist_read_presets(struct mudclient *mud);
@@ -28,6 +28,7 @@ static void worldlist_set_defaults(void) {
     strcpy(list[0].rsa_exponent, "00010001");
     strcpy(list[0].rsa_modulus, "87cef754966ecb19806238d9fecf0f421e816976f74f365c86a584e51049794d41fefbdc5fed3a3ed3b7495ba24262bb7d1dd5d2ff9e306b5bbf5522a2e85b25");
 
+#ifndef __NDS__
     strcpy(list[1].name, "OpenRSC_Uranium");
     strcpy(list[1].host, "game.openrsc.com");
     list[1].port = USE_WEBSOCKS ? 43435 : 43235;
@@ -39,6 +40,7 @@ static void worldlist_set_defaults(void) {
     list[2].port = USE_WEBSOCKS ? 43494 : 43594;
     strcpy(list[2].rsa_exponent, "00010001");
     strcpy(list[2].rsa_modulus, "86b03ac30518bdb3e508ca9660efc7738a73ee7dbedbcebf8c56d030a2bdae70503c60829b7fb5eceb529442234c21bce6d529c8da4fce870e83ceffc379e281");
+#endif
 }
 
 static void worldlist_read_presets(struct mudclient *mud) {
@@ -112,7 +114,7 @@ void worldlist_new(mudclient *mud) {
 
     int world_count = 0;
 
-    for (int i = 0; list[i].name[0] != '\0'; ++i) {
+    for (int i = 0; i < WORLDLIST_SIZE && list[i].name[0] != '\0'; ++i) {
         world_count++;
         for (int j = 0; list[i].name[j] != '\0'; ++j) {
             if (list[i].name[j] == '_') {

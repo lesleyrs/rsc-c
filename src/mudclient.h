@@ -43,6 +43,9 @@
 #define GAME_OFFSET_Y 54
 #elif defined(__SWITCH__)
 #include <switch.h>
+#elif defined(__NDS__)
+#include <nds.h>
+float hw_sqrtf(float x);
 #elif defined(_3DS)
 #include <3ds.h>
 #include <malloc.h>
@@ -66,7 +69,7 @@
      GX_TRANSFER_SCALING(GX_TRANSFER_SCALE_NO))
 #endif
 
-#if !defined(WII) && !defined(_3DS)
+#if !defined(WII) && !defined(_3DS) && !defined(__NDS__)
 #ifdef __SWITCH__
 #include <SDL2/SDL.h>
 #else
@@ -196,17 +199,21 @@
 #define MUD_VANILLA_WIDTH 512
 #define MUD_VANILLA_HEIGHT 346
 
+#ifdef __NDS__
+// 256x192
+#define MUD_MIN_WIDTH SCREEN_WIDTH
+#define MUD_MIN_HEIGHT SCREEN_HEIGHT
+#else
 #define MUD_MIN_WIDTH 320
 #define MUD_MIN_HEIGHT 240
+#endif
 
-#ifdef _3DS
+#if defined(_3DS) || defined(__NDS__)
 #define MUD_WIDTH MUD_MIN_WIDTH
 #define MUD_HEIGHT MUD_MIN_HEIGHT
 #else
 #define MUD_WIDTH MUD_VANILLA_WIDTH
 #define MUD_HEIGHT MUD_VANILLA_HEIGHT
-// #define MUD_WIDTH 320
-// #define MUD_HEIGHT 240
 #endif
 
 // TODO make this a function
@@ -383,10 +390,12 @@ void mudclient_3ds_gl_frame_start(mudclient *mud, int clear);
 void mudclient_3ds_gl_frame_end();
 #endif
 #else
+#ifndef __NDS__
 #ifdef SDL12
 void get_sdl_keycodes(SDL_keysym *keysym, char *char_code, int *code);
 #else
 void get_sdl_keycodes(SDL_Keysym *keysym, char *char_code, int *code);
+#endif
 #endif
 #endif
 
@@ -513,6 +522,8 @@ struct mudclient {
     C3D_RenderTarget *_3ds_gl_render_target;
     C3D_RenderTarget *_3ds_gl_offscreen_render_target;
 #endif
+#elif defined(__NDS__)
+    uint16_t *fb;
 #else
 #ifndef SDL12
     SDL_Window *window;

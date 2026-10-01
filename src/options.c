@@ -37,7 +37,11 @@ void options_new(Options *options) {
 
 void options_set_defaults(Options *options) {
     /* server */
+#ifdef __NDS__
+    options->members = 0;
+#else
     options->members = 1;
+#endif
     options->version_config = VERSION_CONFIG;
     options->version_entity = VERSION_ENTITY;
     options->version_maps = VERSION_MAPS;
@@ -50,8 +54,13 @@ void options_set_defaults(Options *options) {
     options->max_skills = 18;
     options->registration = 0;
     options->idle_logout = 0;
+#ifdef __NDS__
+    options->remember_username = 1;
+    options->remember_password = 1;
+#else
     options->remember_username = 0;
     options->remember_password = 0;
+#endif
     options->diversify_npcs = 0;
     options->rename_herblaw_items = 0;
 
@@ -85,14 +94,26 @@ void options_set_defaults(Options *options) {
     options->touch_menu_delay = 350;
 
     /* display */
+#ifdef __NDS__
+    options->lowmem = 1;
+#else
     options->lowmem = 0;
+#endif
     options->interlace = 0;
     options->flicker = 1;
     options->fog_of_war = 1;
     options->ran_target_fps = 10;
+#ifdef __NDS__
+    options->display_fps = 1;
+#else
     options->display_fps = 0;
+#endif
     options->number_commas = 1;
+#ifdef __NDS__
+    options->show_roofs = 0;
+#else
     options->show_roofs = 1;
+#endif
     options->remaining_experience = 1;
     options->total_experience = 1;
     options->experience_drops = 0;
@@ -345,7 +366,7 @@ void options_load(Options *options) {
     OPTION_INI_INT("version_textures", options->version_textures, 0, 256);
     OPTION_INI_INT("version_sounds", options->version_sounds, 0, 256);
     OPTION_INI_INT("fatigue", options->fatigue, 0, 1);
-    OPTION_INI_INT("last_world", options->last_world, 0, 256);
+    OPTION_INI_INT("last_world", options->last_world, 0, WORLDLIST_SIZE);
     OPTION_INI_INT("max_quests", options->max_quests, 0, 50);
     OPTION_INI_INT("max_skills", options->max_skills, 0, 18);
     OPTION_INI_INT("registration", options->registration, 0, 1);

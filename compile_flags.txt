@@ -1,0 +1,5 @@
+-D__NDS__
+-DARM9
+-DARM7
+-I/opt/devkitpro/libnds/include/
+-I/opt/devkitpro/calico/include/

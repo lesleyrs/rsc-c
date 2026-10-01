@@ -25,6 +25,8 @@
 #include <citro3d.h>
 #include <tex3ds.h>
 #endif
+#elif defined(__NDS__)
+#include <nds.h>
 #else
 #ifdef __SWITCH__
 #include <SDL2/SDL.h>

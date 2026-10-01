@@ -71,7 +71,7 @@ static char *game_data_get_string(void) {
 }
 
 void game_data_load_data(int8_t *buffer, int is_members, int version) {
-    memset(game_data.model_name, 0, 5000 * sizeof(char *));
+    memset(game_data.model_name, 0, MODEL_COUNT * sizeof(char *));
 
     game_data.data_string =
         load_data("string.dat", 0, buffer, &game_data.data_string_len);

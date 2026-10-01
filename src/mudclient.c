@@ -169,7 +169,7 @@ void mudclient_new(mudclient *mud) {
 }
 
 void mudclient_resize(mudclient *mud) {
-#if !defined(WII) && !defined(_3DS)
+#if !defined(WII) && !defined(_3DS) && !defined(__NDS__)
     SDL_FreeSurface(mud->screen);
     SDL_FreeSurface(mud->pixel_surface);
 
@@ -966,7 +966,7 @@ int8_t *mudclient_read_data_file(mudclient *mud, char *file, char *description,
 #endif
 
 #ifndef ANDROID
-    printf("INFO: Loading %s\n", prefixed_file);
+    printf("Loading %s\n", prefixed_file);
     FILE *archive_stream = fopen(prefixed_file, "rb");
 #endif
 
@@ -987,7 +987,7 @@ int8_t *mudclient_read_data_file(mudclient *mud, char *file, char *description,
                      xdg_home, file);
         }
 
-        printf("INFO: Loading %s\n", prefixed_file);
+        printf("Loading %s\n", prefixed_file);
         archive_stream = fopen(prefixed_file, "rb");
 
         /* XDG failed, now try the global prefix... */
@@ -995,7 +995,7 @@ int8_t *mudclient_read_data_file(mudclient *mud, char *file, char *description,
             snprintf(prefixed_file, sizeof(prefixed_file), "%s/%s", MUD_DATADIR,
                      file);
 
-            printf("INFO: Loading %s\n", prefixed_file);
+            printf("Loading %s\n", prefixed_file);
             archive_stream = fopen(prefixed_file, "rb");
         }
     }
@@ -1623,6 +1623,10 @@ void mudclient_load_textures(mudclient *mud) {
 
     for (int i = 0; i < game_data.texture_count; i++) {
 #ifdef USE_TOONSCAPE
+#ifdef __NDS__
+        // TODO toonscape_avoid_load all textures
+        break;
+#endif
         if (toonscape_avoid_load(i)) {
             continue;
         }
@@ -1936,7 +1940,7 @@ void mudclient_reset_game(mudclient *mud) {
     mud->ground_item_count = 0;
     mud->player_count = 0;
 
-    GameCharacter *freed_characters[NPCS_SERVER_MAX] = {0};
+    GameCharacter **freed_characters = calloc(NPCS_SERVER_MAX, sizeof(GameCharacter*));
     int freed_count = 0;
 
     for (int i = 0; i < PLAYERS_SERVER_MAX; i++) {
@@ -2015,6 +2019,7 @@ void mudclient_reset_game(mudclient *mud) {
     mud->show_dialog_bank = 0;
     mud->is_sleeping = 0;
     mud->friend_list_count = 0;
+    free(freed_characters);
 }
 
 void mudclient_login(mudclient *mud, char *username, char *password,
@@ -2621,7 +2626,11 @@ void mudclient_start_game(mudclient *mud) {
 
     mud->scene = malloc(sizeof(Scene));
     if (mud->options->lowmem) {
+#ifdef __NDS__
+        scene_new(mud->scene, mud->surface, 2048, 2048, 100);
+#else
         scene_new(mud->scene, mud->surface, 7500, 7500, 1000);
+#endif
     } else {
         scene_new(mud->scene, mud->surface, 15000, 15000, 1000);
     }
@@ -4832,6 +4841,13 @@ void mudclient_draw_game(mudclient *mud) {
                             is_touch ? 9 + offset_x
                                      : mud->surface->width - 62 - offset_x,
                             mud->surface->height - 22, FONT_BOLD_12, YELLOW);
+#ifdef __NDS__
+        u32 value = getBatteryLevel();
+        unsigned int battery_level = PM_BATT_LEVEL(value);
+        char batt[128] = {0};
+        sprintf(batt, "Batt. %d/15", battery_level);
+        surface_draw_string(mud->surface, batt, mud->surface->width - 62 - offset_x, mud->surface->height - 22 - 15, FONT_BOLD_12, YELLOW);
+#endif
     }
 
 #ifndef REVISION_177
@@ -5012,7 +5028,7 @@ void mudclient_on_resize(mudclient *mud) {
     int new_width = MUD_WIDTH;
     int new_height = MUD_HEIGHT;
 
-#if !defined(_3DS) && !defined(WII) && !defined(SDL12)
+#if !defined(_3DS) && !defined(WII) && !defined(SDL12) && !defined(__NDS__)
 #ifdef RENDER_GL
     SDL_Window *window = mud->gl_window;
 #else
@@ -5220,6 +5236,12 @@ void mudclient_run(mudclient *mud) {
         }
 
         i1 &= 255;
+
+#ifdef __NDS__
+    if (!pmMainLoop()) {
+        return;
+    }
+#endif
 
 #ifdef _3DS
         if (!mud->keyboard_open) {

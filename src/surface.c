@@ -121,7 +121,7 @@ void surface_new(Surface *surface, int width, int height, int limit,
     surface->bounds_max_y = height;
 
 #ifdef RENDER_SW
-#if (defined(WII) || defined(_3DS))
+#if defined(WII) || defined(_3DS) || defined(__NDS__)
     surface->pixels = calloc(width * height, sizeof(int32_t));
 #else
     surface->pixels = mud->pixel_surface->pixels;
@@ -230,6 +230,22 @@ void surface_draw(Surface *surface) {
     if (mud->keyboard_open) {
         VIDEO_WaitVSync();
     }
+#elif defined(__NDS__)
+    static bool frame;
+    frame = !frame;
+    int start_y = mud->surface->interlace ? frame : 0;
+    for (int y = start_y; y < SCREEN_HEIGHT; y += (mud->surface->interlace ? 2 : 1)) {
+        for (int x = 0; x < SCREEN_WIDTH; x++) {
+            int framebuffer_index = y * SCREEN_WIDTH + x;
+            int pixel = surface->pixels[y * surface->width + x];
+
+            uint32_t r = (pixel >> 16) & 0xff;
+            uint32_t g = (pixel >> 8) & 0xff;
+            uint32_t b = pixel & 0xff;
+
+            mud->fb[framebuffer_index] = RGB8(r, g, b);
+        }
+    }
 #elif defined(_3DS)
 #ifdef RENDER_SW
     uint8_t *surface_pixels = (uint8_t *)surface->pixels;
@@ -325,7 +341,11 @@ void surface_draw_circle(Surface *surface, int x, int y, int radius, int colour,
 
     for (int yy = top; yy <= bottom; yy += y_inc) {
         int l3 = yy - y;
+#ifdef __NDS__
+        int i4 = (int)hw_sqrtf(radius * radius - l3 * l3);
+#else
         int i4 = (int)sqrt(radius * radius - l3 * l3);
+#endif
         int j4 = x - i4;
 
         if (j4 < 0) {
@@ -1233,8 +1253,17 @@ void surface_draw_sprite_reversed(Surface *surface, int sprite_id, int x, int y,
 
     for (int xx = x; xx < x + width; xx++) {
         for (int yy = y; yy < y + height; yy++) {
+#ifdef __NDS__
+            // NOTE only check upper bound and why smaller game size means black/unloaded map sometimes
+            if (xx < surface->bounds_max_x && yy < surface->bounds_max_y) {
+                int colour = surface->pixels[xx + yy * surface->width];
+                surface->surface_pixels[sprite_id][index] = colour;
+            }
+            index++;
+#else
             int colour = surface->pixels[xx + yy * surface->width];
             surface->surface_pixels[sprite_id][index++] = colour;
+#endif
         }
     }
 

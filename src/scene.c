@@ -118,7 +118,9 @@ void scene_new(Scene *scene, Surface *surface, int model_count,
 
     // TODO we need to re-allocate more polygons when client is resized, or just
     // add more to initial polygon_count
+#ifndef __NDS__
     polygon_count = 32767;
+#endif
 
     scene->surface = surface;
     scene->max_model_count = model_count;
@@ -774,6 +776,8 @@ void scene_add_model(Scene *scene, GameModel *model) {
 
     if (scene->model_count < scene->max_model_count) {
         scene->models[scene->model_count++] = model;
+    } else {
+        mud_error("Model not added %d/%d\n", scene->model_count, scene->max_model_count);
     }
 }
 
@@ -2795,8 +2799,13 @@ static void scene_initialise_polygon_3d(Scene *scene, int polygon_index) {
 
         game_model->normal_magnitude[face] =
             scene->normal_magnitude *
+#ifdef __NDS__
+            hw_sqrtf(normal_x * normal_x + normal_y * normal_y +
+                 normal_z * normal_z);
+#else
             sqrt(normal_x * normal_x + normal_y * normal_y +
                  normal_z * normal_z);
+#endif
     } else {
         normal_x >>= normal_scale;
         normal_y >>= normal_scale;
@@ -3235,10 +3244,15 @@ static void scene_set_texture_pixels(Scene *scene, int id) {
 
     for (int x = 0; x < texture_width; x++) {
         for (int y = 0; y < texture_width; y++) {
+#ifdef __NDS__
+            // NOTE: not enough ram for textures
+            int colour = 0xffffff;
+#else
             int colour =
                 scene->texture_palette
                     [id]
                     [scene->texture_colours[id][y + x * texture_width] & 0xff];
+#endif
 
             colour &= 0xf8f8ff;
 

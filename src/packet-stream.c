@@ -138,7 +138,7 @@ void packet_stream_new(PacketStream *packet_stream, mudclient *mud) {
     server_addr.sin_family = AF_INET;
     server_addr.sin_port = htons(mud->port);
 
-#if defined(WIN9X) || defined(WII)
+#if defined(WIN9X) || defined(WII) || defined(__NDS__)
     struct hostent *host_addr = gethostbyname(mud->server);
 
     if (host_addr) {
@@ -375,7 +375,7 @@ int packet_stream_read_bytes(PacketStream *packet_stream, int length,
 int packet_stream_write_bytes(PacketStream *packet_stream, int8_t *buffer,
                               int offset, int length) {
     if (!packet_stream->closed) {
-#if defined(WIN32) || defined(__SWITCH__)
+#if defined(WIN32) || defined(__SWITCH__) || defined(__NDS__)
         return send(packet_stream->socket, buffer + offset, length, 0);
 #else
         return write(packet_stream->socket, buffer + offset, length);

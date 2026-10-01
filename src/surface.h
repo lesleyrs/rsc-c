@@ -8,6 +8,10 @@
 
 #include "utility.h"
 
+#ifdef __NDS__
+#include <nds.h>
+#endif
+
 #ifdef WII
 #include <gccore.h>
 
