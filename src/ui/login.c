@@ -1,12 +1,17 @@
 #include "login.h"
 
+// TODO nds needs some extra work, maybe separate function for it
 void mudclient_create_login_panels(mudclient *mud) {
     int is_compact = mud->surface->width < MUD_VANILLA_WIDTH ||
                      mud->surface->height < MUD_VANILLA_HEIGHT;
 
     int is_touch = mudclient_is_touch(mud);
 
+#ifdef __NDS__
+    int login_background_height = 40;
+#else
     int login_background_height = is_compact ? 125 : 200;
+#endif
 
     mud->panel_login_welcome = malloc(sizeof(Panel));
     panel_new(mud->panel_login_welcome, mud->surface, 50);
@@ -150,6 +155,9 @@ void mudclient_create_login_panels(mudclient *mud) {
                                   "'create account' link below the game window",
                                   font, 1);
         } else {
+#ifdef __NDS__
+        y = 30;
+#endif
             panel_add_text_centre(mud->panel_login_new_user, x, y + 8,
                                   "To create an account please go back to the",
                                   font, 1);
@@ -307,9 +315,17 @@ void mudclient_create_login_panels(mudclient *mud) {
 
         y += 13;
 
+#ifdef __NDS__
+        panel_add_text_centre(mud->panel_login_existing_user, x, y + 110, "Press Start for text input", FONT_BOLD_14, 1);
+#endif
+
         mud->control_login_status_bottom = panel_add_text_centre(
             mud->panel_login_existing_user, x, y - 10,
+#ifdef __NDS__
+            "Please enter your username and password", FONT_BOLD_12, 1);
+#else
             "Please enter your username and password", FONT_BOLD_13, 1);
+#endif
 
         y += 24;
 

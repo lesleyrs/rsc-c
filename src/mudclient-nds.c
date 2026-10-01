@@ -9,8 +9,8 @@ void mudclient_start_application(mudclient *mud, char *title) {
     cpuStartTiming(0xdeadbeef); // NOTE unused value, but not in blocksds?
     lcdMainOnBottom();
     consoleDemoInit();
+    keyboardDemoInit();
     // consoleDebugInit(DebugDevice_NOCASH); // has to be disabled on hw for logging errors, need to detect if running in emu?
-	keyboardDemoInit();
     videoSetMode(MODE_FB0);
     vramSetBankA(VRAM_A_LCD);
     memset(VRAM_A, 0, SCREEN_WIDTH * SCREEN_HEIGHT * sizeof(uint16_t));
@@ -32,8 +32,6 @@ void mudclient_start_application(mudclient *mud, char *title) {
         mud_error("[ERROR]: Failed to connect!\n");
         goto err;
 	}
-
-	mud_log("Press Start for text input\n\n");
 	return;
 
 	err:
@@ -45,6 +43,11 @@ void mudclient_poll_events(mudclient *mud) {
 	scanKeys();
 	int keys_down = keysDown();
 	int keys_up = keysUp();
+
+	if (keys_down & KEY_Y) {
+	    consoleClear();
+	}
+
 	if (keys_down & KEY_R) {
 	    malloc_stats();
 	}
@@ -63,9 +66,9 @@ void mudclient_poll_events(mudclient *mud) {
     if (kb) {
     	int key = keyboardUpdate();
 
-    	if (key > 0) {
-        	mudclient_key_pressed(mud, key, key);
-    	}
+        if (key != -1) {
+            mudclient_key_pressed(mud, key, key);
+        }
     }
 
     if (keys_down & KEY_SELECT) {
