@@ -316,7 +316,7 @@ void mudclient_create_login_panels(mudclient *mud) {
         y += 13;
 
 #ifdef __NDS__
-        panel_add_text_centre(mud->panel_login_existing_user, x, y + 110, "Press Start for text input", FONT_BOLD_14, 1);
+        panel_add_text_centre(mud->panel_login_existing_user, x, y + 110, "Press START for text input", FONT_BOLD_14, 1);
 #endif
 
         mud->control_login_status_bottom = panel_add_text_centre(

@@ -6,14 +6,32 @@
 #include "mudclient.h"
 
 void mudclient_start_application(mudclient *mud, char *title) {
+    // NOTE clearing vram is only needed for twilightmenu++ loader
+    // from blocksds https://codeberg.org/blocksds/libnds/src/commit/4674cdfed005eb9a3699f4896e5c587ebc8b6a09/source/arm9/video/video.c#L63-L87
+    vramSetPrimaryBanks(VRAM_A_LCD, VRAM_B_LCD, VRAM_C_LCD, VRAM_D_LCD);
+    vramSetBanks_EFG(VRAM_E_LCD, VRAM_F_LCD, VRAM_G_LCD);
+    vramSetBankH(VRAM_H_LCD);
+    vramSetBankI(VRAM_I_LCD);
+
+    dmaFillWords(0, BG_PALETTE, 2 * 1024); // Clear main and sub palette
+    dmaFillWords(0, OAM, 2 * 1024);        // Clear main and sub OAM
+    dmaFillWords(0, VRAM, 656 * 1024);     // Clear all VRAM
+
     cpuStartTiming(0xdeadbeef); // NOTE unused value, but not in blocksds?
     lcdMainOnBottom();
+
     consoleDemoInit();
+    consoleSetWindow(NULL, 0, 0, 32, 15); // keep console text above keyboard
     keyboardDemoInit();
     // consoleDebugInit(DebugDevice_NOCASH); // has to be disabled on hw for logging errors, need to detect if running in emu?
     videoSetMode(MODE_FB0);
-    vramSetBankA(VRAM_A_LCD);
-    memset(VRAM_A, 0, SCREEN_WIDTH * SCREEN_HEIGHT * sizeof(uint16_t));
+
+    // NOTE already done above for console/keyboard
+    // vramSetBankA(VRAM_A_LCD);
+    // memset(VRAM_A, 0, SCREEN_WIDTH * SCREEN_HEIGHT * sizeof(uint16_t));
+
+    // TODO try for fun after hw accel
+    // setCpuClock(false);
 
     if (!isDSiMode()) {
         mud_error("[ERROR]: NDS detected! only DSi is supported.\n");
@@ -44,31 +62,24 @@ void mudclient_poll_events(mudclient *mud) {
 	int keys_down = keysDown();
 	int keys_up = keysUp();
 
-	if (keys_down & KEY_Y) {
-	    consoleClear();
-	}
+    if (keys_down & KEY_R) {
+        mud_log("button R unused");
+    }
 
-	if (keys_down & KEY_R) {
+    if (keys_down & KEY_A) {
+        mud_log("button A unused");
+    }
+
+    if (keys_down & KEY_B) {
+        mud_log("button B unused");
+    }
+
+	if (keys_down & KEY_X) {
 	    malloc_stats();
 	}
 
-    static bool kb;
-    if (keys_down & KEY_START) {
-        kb = !kb;
-        lcdSwap();
-        if (kb) {
-            keyboardShow();
-        } else {
-            keyboardHide();
-        }
-    }
-
-    if (kb) {
-    	int key = keyboardUpdate();
-
-        if (key != -1) {
-            mudclient_key_pressed(mud, key, key);
-        }
+    if (keys_down & KEY_Y) {
+        consoleClear();
     }
 
     if (keys_down & KEY_SELECT) {
@@ -107,7 +118,24 @@ void mudclient_poll_events(mudclient *mud) {
         mudclient_key_released(mud, K_DOWN);
     }
 
-    if (!kb) {
+    static bool kb;
+    if (keys_down & KEY_START) {
+        kb = !kb;
+        lcdSwap();
+        if (kb) {
+            keyboardShow();
+        } else {
+            keyboardHide();
+        }
+    }
+
+    if (kb) {
+        int16_t key = keyboardUpdate();
+
+        if (key != -1) {
+            mudclient_key_pressed(mud, key, key);
+        }
+    } else {
         touchPosition touch = {0};
         touchRead(&touch);
 
