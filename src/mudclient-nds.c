@@ -27,7 +27,7 @@ void mudclient_start_application(mudclient *mud, char *title) {
     videoSetMode(MODE_FB0);
 
     // NOTE already done above for console/keyboard
-    // vramSetBankA(VRAM_A_LCD);
+    vramSetBankA(VRAM_A_LCD);
     // memset(VRAM_A, 0, SCREEN_WIDTH * SCREEN_HEIGHT * sizeof(uint16_t));
 
     // TODO try for fun after hw accel
