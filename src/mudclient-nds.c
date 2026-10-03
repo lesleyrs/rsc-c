@@ -63,15 +63,15 @@ void mudclient_poll_events(mudclient *mud) {
 	int keys_up = keysUp();
 
     if (keys_down & KEY_R) {
-        mud_log("button R unused");
+        mud_log("button R unused\n");
     }
 
     if (keys_down & KEY_A) {
-        mud_log("button A unused");
+        mud_log("button A unused\n");
     }
 
     if (keys_down & KEY_B) {
-        mud_log("button B unused");
+        mud_log("button B unused\n");
     }
 
 	if (keys_down & KEY_X) {
