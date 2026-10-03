@@ -1,0 +1,17 @@
+/org.scape2003.mudclient
+/SDL_image-1.2.12
+/SDL-1.2.15
+/SDL2-2.0.20
+/glew-2.1.0
+/*.dll
+/glad
+/cglm
+/win
+/web
+/wii
+/switch
+/3ds
+/gfx
+/texture-pack
+/nitrofs
+/cache
