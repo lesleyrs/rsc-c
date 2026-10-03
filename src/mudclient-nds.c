@@ -133,6 +133,10 @@ void mudclient_poll_events(mudclient *mud) {
         int16_t key = keyboardUpdate();
 
         if (key != -1) {
+            if (key == 10) {
+                // NOTE: why this wasn't needed for login/chat, but needed for sleeping bag
+                key = K_ENTER;
+            }
             mudclient_key_pressed(mud, key, key);
         }
     } else {
