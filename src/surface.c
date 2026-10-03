@@ -1227,7 +1227,7 @@ void surface_screen_raster_to_sprite(Surface *surface, int sprite_id, int x,
 
     free(surface->sprite_palette[sprite_id]);
     surface->sprite_palette[sprite_id] = NULL;
-#else
+#elif defined(RENDER_GL) || defined(RENDER_3DS_GL)
     surface_gl_raster_to_sprite(surface, sprite_id, x, y, width, height);
 #endif
 }
