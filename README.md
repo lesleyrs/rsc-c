@@ -26,6 +26,8 @@ TODO textures (need 4mb or extended apply_toonscape/toonscape_avoid_load all) at
 NOTE some extra memory: surface_draw_sprite_reversed minimap, MODEL_COUNT, TERRAIN_MAX_VERTICES?, scene_new values
 forced lowmem + f2p (no sound), no roofs
 
+highly recommended to load a config.ini with user/pass pre-set relative to nds file
+
 * d-pad/circle pad to control camera
 * touch screen for mouse input
 * hold L whilst tapping touch screen for right click
