@@ -109,11 +109,7 @@ void options_set_defaults(Options *options) {
     options->display_fps = 0;
 #endif
     options->number_commas = 1;
-#ifdef __NDS__
     options->show_roofs = 1;
-#else
-    options->show_roofs = 1;
-#endif
     options->remaining_experience = 1;
     options->total_experience = 1;
     options->experience_drops = 0;
