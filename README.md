@@ -27,8 +27,6 @@ prominent new features include:
 * NOTE some extra memory: surface_draw_sprite_reversed minimap, MODEL_COUNT, TERRAIN_MAX_VERTICES?, scene_new values
 * NOTE to boot in melonDS you need to set emulation to DSi, set bios/firmware/nand paths + enable sd card, and go to firmware settings > override settings from external firmware. (melonDS sd card doesn't seem to work, and this PR is required https://github.com/melonDS-emu/melonDS/pull/2771)
 
-run `make -f nds.mk -j$(nproc) -B` for building DSi.
-
 * forced lowmem + f2p (no sound)
 * highly recommended to load a config.ini with user/pass pre-set relative to nds file
 
@@ -189,6 +187,8 @@ see `./build-wii.sh` for building for Wii.
 install
 [nds-dev package in devkitPro](https://devkitpro.org/wiki/Getting_Started),
 [melonDS](https://melonds.kuribo64.net/downloads.php) to test locally.
+
+run `make -f nds.mk -j$(nproc) -B` for building DSi.
 
 ## build (3ds)
 
