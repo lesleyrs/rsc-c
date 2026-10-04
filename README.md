@@ -22,13 +22,10 @@ prominent new features include:
 * TODO enable account_management to create accounts inside client, if supported?
 * TODO tabs don't fit inside the screen, must put them at y=0 at least somehow
 * TODO not all textures are loaded (see toonscape, requires 4mb ram) just the most important/translucent ones
-
 * NOTE using blocksds instead of devkitpro would simply things: no clearing ram, no fat_cwd/get_dirname (fatgetdefaultcwd), no copying hw_sqrtf
 * NOTE some extra memory: surface_draw_sprite_reversed minimap, MODEL_COUNT, TERRAIN_MAX_VERTICES?, scene_new values
 * NOTE to boot in melonDS you need to set emulation to DSi, set bios/firmware/nand paths + enable sd card, and go to firmware settings > override settings from external firmware. (melonDS sd card doesn't seem to work, and this PR is required https://github.com/melonDS-emu/melonDS/pull/2771)
-
-* forced lowmem + f2p (no sound)
-* highly recommended to load a config.ini with user/pass pre-set relative to nds file
+* NOTE forced lowmem + f2p (no sound), highly recommended to load a config.ini with user/pass pre-set relative to nds file
 
 * d-pad/circle pad to control camera
 * touch screen for mouse input
