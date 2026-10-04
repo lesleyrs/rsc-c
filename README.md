@@ -18,15 +18,16 @@ prominent new features include:
 
 ### controls (dsi):
 
-TODO add libtom to other platforms too
-TODO enable account_management to create accounts inside client, if supported?
-TODO tabs don't fit inside the screen, must put them at y=0 at least somehow
-TODO textures (need 4mb or extended apply_toonscape/toonscape_avoid_load all) at least load translucent ones
+* TODO add libtom to other platforms too
+* TODO enable account_management to create accounts inside client, if supported?
+* TODO tabs don't fit inside the screen, must put them at y=0 at least somehow
+* TODO not all textures are loaded (see toonscape, requires 4mb ram) just the most important/translucent ones
 
-NOTE some extra memory: surface_draw_sprite_reversed minimap, MODEL_COUNT, TERRAIN_MAX_VERTICES?, scene_new values
-forced lowmem + f2p (no sound)
+* NOTE using blocksds instead of devkitpro would simply things: no clearing ram, no fat_cwd/get_dirname (fatgetdefaultcwd), no copying hw_sqrtf
+* NOTE some extra memory: surface_draw_sprite_reversed minimap, MODEL_COUNT, TERRAIN_MAX_VERTICES?, scene_new values
 
-highly recommended to load a config.ini with user/pass pre-set relative to nds file
+* forced lowmem + f2p (no sound)
+* highly recommended to load a config.ini with user/pass pre-set relative to nds file
 
 * d-pad/circle pad to control camera
 * touch screen for mouse input

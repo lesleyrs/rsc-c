@@ -1,4 +1,5 @@
 #include "scene.h"
+#include "custom/toonscape.h"
 
 #if defined(__GNUC__)
 #define likely(x)	(__builtin_expect(((x) != 0), 1))
@@ -3247,8 +3248,13 @@ static void scene_set_texture_pixels(Scene *scene, int id) {
     for (int x = 0; x < texture_width; x++) {
         for (int y = 0; y < texture_width; y++) {
 #ifdef __NDS__
-            // NOTE: not enough ram for textures
             int colour = 0xffffff;
+            if (toonscape_allow_load(id)) {
+                colour =
+                    scene->texture_palette
+                        [id]
+                        [scene->texture_colours[id][y + x * texture_width] & 0xff];
+            }
 #else
             int colour =
                 scene->texture_palette

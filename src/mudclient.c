@@ -1623,10 +1623,6 @@ void mudclient_load_textures(mudclient *mud) {
 
     for (int i = 0; i < game_data.texture_count; i++) {
 #ifdef USE_TOONSCAPE
-#ifdef __NDS__
-        // TODO toonscape_avoid_load all textures
-        break;
-#endif
         if (toonscape_avoid_load(i)) {
             continue;
         }
