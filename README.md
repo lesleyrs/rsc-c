@@ -18,6 +18,7 @@ prominent new features include:
 
 ### controls (dsi):
 
+TODO add libtom to other platforms too
 TODO enable account_management to create accounts inside client, if supported?
 TODO tabs don't fit inside the screen, must put them at y=0 at least somehow
 TODO textures (need 4mb or extended apply_toonscape/toonscape_avoid_load all) at least load translucent ones
