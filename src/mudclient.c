@@ -1349,7 +1349,6 @@ static void mudclient_load_media_tga(mudclient *mud, void *media_jag) {
 }
 
 void mudclient_load_media(mudclient *mud) {
-#if defined(RENDER_GL) || defined(RENDER_SW) || defined(RENDER_3DS_GL)
     char jag[16];
 
     snprintf(jag, sizeof(jag), "media%d.jag", mud->options->version_media);
@@ -1399,11 +1398,9 @@ void mudclient_load_media(mudclient *mud) {
 #ifndef WII
     free(media_jag);
 #endif
-#endif
 }
 
 void mudclient_load_entities(mudclient *mud) {
-#if defined(RENDER_GL) || defined(RENDER_SW) || defined(RENDER_3DS_GL)
     char jag[16];
     snprintf(jag, sizeof(jag), "entity%d.jag", mud->options->version_entity);
 
@@ -1596,7 +1593,6 @@ fallthrough:
 
     free(index_dat);
     free(index_dat_mem);
-#endif
 }
 
 void mudclient_load_textures(mudclient *mud) {
