@@ -87,6 +87,7 @@ TEXTURE_CANVAS,
 
 #ifdef __NDS__
 bool toonscape_allow_load(int id) {
+    // https://chisel.weirdgloop.org/rsc/images/textures17.jag/index.html
     // NOTE: this kills performance and stores them at double the size, also no memory left at all
     return id == TEXTURE_FOUNTAIN || id == TEXTURE_FENCE || id == TEXTURE_GROWINGWHEAT || id == TEXTURE_DEADTREE || id == TEXTURE_WALL_DOORWAY;
     // id == TEXTURE_RAILINGS || 
