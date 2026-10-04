@@ -110,7 +110,7 @@ void options_set_defaults(Options *options) {
 #endif
     options->number_commas = 1;
 #ifdef __NDS__
-    options->show_roofs = 0;
+    options->show_roofs = 1;
 #else
     options->show_roofs = 1;
 #endif
