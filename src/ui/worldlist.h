@@ -4,7 +4,7 @@
 #include "../mudclient.h"
 
 #ifdef __NDS__
-#define WORLDLIST_SIZE 1
+#define WORLDLIST_SIZE 10
 #else
 #define WORLDLIST_SIZE (1 << 8)
 #endif

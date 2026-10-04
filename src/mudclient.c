@@ -4842,11 +4842,12 @@ void mudclient_draw_game(mudclient *mud) {
                                      : mud->surface->width - 62 - offset_x,
                             mud->surface->height - 22, FONT_BOLD_12, YELLOW);
 #ifdef __NDS__
+        char buf[128] = {0};
+
         u32 value = getBatteryLevel();
         unsigned int battery_level = PM_BATT_LEVEL(value);
-        char batt[128] = {0};
-        sprintf(batt, "Batt. %d/15", battery_level);
-        surface_draw_string(mud->surface, batt, mud->surface->width - 62 - offset_x, mud->surface->height - 22 - 15, FONT_BOLD_12, YELLOW);
+        sprintf(buf, "Batt. %d/15", battery_level);
+        surface_draw_string(mud->surface, buf, mud->surface->width - 62 - offset_x, mud->surface->height - 22 - 15, FONT_BOLD_12, YELLOW);
 #endif
     }
 
@@ -5634,6 +5635,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine,
     argv = (char**)CommandLineToArgvW(GetCommandLineW(), &argc);
 #else
 int main(int argc, char **argv) {
+#endif
+#ifdef __NDS__
+    if (argc > 0) {
+        fat_cwd = argv[0];
+    } else {
+        fat_cwd = "";
+    }
+    void nds_init();
+    nds_init();
 #endif
 #ifdef _3DS
     osSetSpeedupEnable(true);

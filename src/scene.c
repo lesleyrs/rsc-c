@@ -1197,6 +1197,7 @@ void scene_initialise_polygons_2d(Scene *scene) {
 
             if (scene->visible_polygons_count >=
                 (scene->max_polygon_count - 1)) {
+                mud_error("Too many polys %d/%d\n", scene->visible_polygons_count, scene->max_polygon_count - 1);
                 break;
             }
 
@@ -1383,6 +1384,7 @@ void scene_render(Scene *scene) {
                     if (view_y_count == 3) {
                         if (scene->visible_polygons_count >=
                             (scene->max_polygon_count - 1)) {
+                            mud_error("Too many polys %d/%d\n", scene->visible_polygons_count, scene->max_polygon_count - 1);
                             break;
                         }
 

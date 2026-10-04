@@ -2,10 +2,14 @@
 #include <nds.h>
 #include <filesystem.h>
 #include <dswifi9.h>
+#include <fat.h>
 
 #include "mudclient.h"
 
 void mudclient_start_application(mudclient *mud, char *title) {
+    mud->fb = VRAM_A;
+}
+void nds_init() {
     // NOTE clearing vram is only needed for twilightmenu++ loader
     // from blocksds https://codeberg.org/blocksds/libnds/src/commit/4674cdfed005eb9a3699f4896e5c587ebc8b6a09/source/arm9/video/video.c#L63-L87
     vramSetPrimaryBanks(VRAM_A_LCD, VRAM_B_LCD, VRAM_C_LCD, VRAM_D_LCD);
@@ -18,8 +22,8 @@ void mudclient_start_application(mudclient *mud, char *title) {
     dmaFillWords(0, VRAM, 656 * 1024);     // Clear all VRAM
 
     cpuStartTiming(0xdeadbeef); // NOTE unused value, but not in blocksds?
-    lcdMainOnBottom();
 
+    lcdMainOnBottom();
     consoleDemoInit();
     consoleSetWindow(NULL, 0, 0, 32, 15); // keep console text above keyboard
     keyboardDemoInit();
@@ -30,26 +34,30 @@ void mudclient_start_application(mudclient *mud, char *title) {
     vramSetBankA(VRAM_A_LCD);
     // memset(VRAM_A, 0, SCREEN_WIDTH * SCREEN_HEIGHT * sizeof(uint16_t));
 
-    // TODO try for fun after hw accel
+    // powerpoint mode
     // setCpuClock(false);
 
     if (!isDSiMode()) {
-        mud_error("[ERROR]: NDS detected! only DSi is supported.\n");
+        mud_error("[ERROR] NDS detected! only DSi is supported.\n");
         goto err;
     }
-
-    if (!nitroFSInit(NULL)) {
-        mud_error("[ERROR]: nitroFS failed to init\n");
-        goto err;
-    }
-    chdir("nitro:/");
-    mud->fb = (uint16_t *)VRAM_A;
 
     // TODO maybe add retry option here
 	if (!Wifi_InitDefault(WFC_CONNECT)) {
-        mud_error("[ERROR]: Failed to connect!\n");
+        mud_error("[ERROR] Failed to connect!\n");
         goto err;
 	}
+
+    if (!fatInitDefault()) {
+        mud_error("[WARN] fatFS failed to init\n");
+        // goto err; // optional
+    }
+
+    if (!nitroFSInit(NULL)) {
+        mud_error("[ERROR] nitroFS failed to init\n");
+        goto err;
+    }
+    chdir("nitro:/");
 	return;
 
 	err:
@@ -280,4 +288,77 @@ float hw_sqrtf(float x)
     }
 }
 
+char *get_dirname(const char *full_path)
+{
+    char *path = strdup(full_path);
+
+    if (path == NULL)
+        return NULL;
+
+    // Check that the path is valid
+
+    int len = strlen(path);
+
+    // Find the first ':' and the last '/'
+
+    int first_colon_pos = -1;
+    int last_slash_pos = -1;
+
+    for (int i = 0; i < len; i++)
+    {
+        char c = path[i];
+
+        if (c == ':')
+        {
+            // ':' must come before '/'
+            if (last_slash_pos != -1)
+                goto cleanup;
+
+            if (first_colon_pos == -1)
+                first_colon_pos = i;
+        }
+        else if (c == '/')
+        {
+            last_slash_pos = i;
+        }
+    }
+
+    // A valid argv[0] must contain a drive name and a path to a NDS file:
+    //
+    // Valid:
+    //
+    //     fat:/test.nds
+    //     sd:/folder/test.nds
+    //
+    // Invalid:
+    //
+    //     test.nds             | No drive name
+    //     folder/test.nds      | No drive name
+    //     sd:/                 | No file name
+    //     fat:/folder/         | No file name
+    //     fat/folder:/test.nds | Invalid drive location
+    //     fat/fol:der/test.nds | No drive name
+
+    if ((first_colon_pos == -1) || (last_slash_pos == -1))
+        goto cleanup;
+
+    // Ensure that the path doesn't end in a '/' and it has a file name
+
+    if (last_slash_pos == (len - 1))
+        goto cleanup;
+
+    // Ensure that the ':' is followed by a '/'
+
+    if (path[first_colon_pos + 1] != '/')
+        goto cleanup;
+
+    // Remove the file name from the path
+
+    path[last_slash_pos + 1] = '\0';
+    return path;
+
+cleanup:
+    free(path);
+    return NULL;
+}
 #endif

@@ -18,14 +18,12 @@ prominent new features include:
 
 ### controls (dsi):
 
-NOTE some extra mem: surface_draw_sprite_reversed minimap, MODEL_COUNT, TERRAIN_MAX_VERTICES, scene_new values (based on lowmem)
-
 TODO enable account_management to create accounts inside client, if supported?
-TODO options/world cfg not loaded and reduced worldlist size, maybe use dldi or sd filesystem not nitrofs (or use both)
-TODO add more button input, maybe allow changing pitch scene_set_camera
-TODO tabs don't fit inside the screen
+TODO tabs don't fit inside the screen, must put them at y=0 at least somehow
+TODO textures (need 4mb or extended apply_toonscape/toonscape_avoid_load all) at least load translucent ones
 
-missing features: textures (need 4mb or extended apply_toonscape/toonscape_avoid_load all), forced lowmem + f2p (no sound), no roofs
+NOTE some extra memory: surface_draw_sprite_reversed minimap, MODEL_COUNT, TERRAIN_MAX_VERTICES?, scene_new values
+forced lowmem + f2p (no sound), no roofs
 
 * d-pad/circle pad to control camera
 * touch screen for mouse input
@@ -185,7 +183,7 @@ install
 [nds-dev package in devkitPro](https://devkitpro.org/wiki/Getting_Started),
 [melonDS](https://melonds.kuribo64.net/downloads.php) to test locally.
 
-to boot in melonDS you need to set emulation to DSi, set bios/firmware/nand paths + enable sd card, and go to firmware settings > override settings from external firmware
+to boot in melonDS you need to set emulation to DSi, set bios/firmware/nand paths + enable sd card, and go to firmware settings > override settings from external firmware. melonDS sd card doesn't seem to work
 
 run `make -f nds.mk -j$(nproc) -B` for building DSi.
 

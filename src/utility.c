@@ -27,6 +27,10 @@ static const CertificateItem certificate_items[] = {
 static int random_colour = 0;
 static int random_colour_ticks = 0;
 
+#ifdef __NDS__
+char* fat_cwd;
+#endif
+
 void init_utility_global(void) {
     for (int i = 0; i < 256; i++) {
         sin_cos_512[i] = (int)(sin((double)i * 0.02454369) * 32768);
@@ -68,6 +72,10 @@ void get_config_path(const char *file, char *path) {
         snprintf(path, PATH_MAX, "%s/.config/" CLIENT_CONFIG_NAME "/%s",
 	    home, file);
     }
+#elif defined(__NDS__)
+    char *dirname = get_dirname(fat_cwd);
+    snprintf(path, PATH_MAX, "%s%s", dirname, file);
+    free(dirname);
 #else
     snprintf(path, PATH_MAX, "%s", file);
 #endif

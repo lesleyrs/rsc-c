@@ -245,11 +245,12 @@ void options_save(Options *options) {
 #endif
 
     if (!ini_file) {
-        mud_error("unable to open options.ini file for writing\n");
+        mud_error("unable to open %s file for writing\n", path);
         return;
     }
 
-    char file_buffer[65536] = {0};
+    int file_length = 1 << 16;
+    char *file_buffer = calloc(1, file_length);
 
     sprintf(file_buffer, OPTIONS_INI_TEMPLATE,
             options->members,               //
@@ -327,7 +328,7 @@ void options_save(Options *options) {
     );
 
 #ifdef ANDROID
-    if (SDL_RWwrite(ini_file, file_buffer, strlen(file_buffer) + 1, 1) < 1) {
+    if (SDL_RWwrite(ini_file, file_buffer, strlen(file_buffer), 1) < 1) {
         mud_error("failed to write options.ini file %s\n", SDL_GetError());
     }
 
@@ -335,14 +336,16 @@ void options_save(Options *options) {
         mud_error("failed to close options.ini file %s\n", SDL_GetError());
     }
 #else
-    fwrite(file_buffer, strlen(file_buffer) + 1, 1, ini_file);
+    fwrite(file_buffer, strlen(file_buffer), 1, ini_file);
     fclose(ini_file);
 #endif
+    free(file_buffer);
 
 #ifdef OPTIONS_UNIX
     /* restrict access to potentially sensitive info */
     (void)chmod(path, S_IRUSR | S_IWUSR);
 #endif
+    mud_log("%s saved\n", path);
 }
 
 void options_load(Options *options) {
@@ -353,7 +356,10 @@ void options_load(Options *options) {
     ini_t *options_ini = ini_load(path);
 
     if (options_ini == NULL) {
+        printf("%s not found\n", path);
         return;
+    } else {
+        printf("%s loaded\n", path);
     }
 
     /* connection */

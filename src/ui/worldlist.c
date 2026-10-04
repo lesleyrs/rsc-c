@@ -28,7 +28,6 @@ static void worldlist_set_defaults(void) {
     strcpy(list[0].rsa_exponent, "00010001");
     strcpy(list[0].rsa_modulus, "87cef754966ecb19806238d9fecf0f421e816976f74f365c86a584e51049794d41fefbdc5fed3a3ed3b7495ba24262bb7d1dd5d2ff9e306b5bbf5522a2e85b25");
 
-#ifndef __NDS__
     strcpy(list[1].name, "OpenRSC_Uranium");
     strcpy(list[1].host, "game.openrsc.com");
     list[1].port = USE_WEBSOCKS ? 43435 : 43235;
@@ -40,7 +39,12 @@ static void worldlist_set_defaults(void) {
     list[2].port = USE_WEBSOCKS ? 43494 : 43594;
     strcpy(list[2].rsa_exponent, "00010001");
     strcpy(list[2].rsa_modulus, "86b03ac30518bdb3e508ca9660efc7738a73ee7dbedbcebf8c56d030a2bdae70503c60829b7fb5eceb529442234c21bce6d529c8da4fce870e83ceffc379e281");
-#endif
+
+    strcpy(list[3].name, "localhost");
+    strcpy(list[3].host, "localhost");
+    list[3].port = USE_WEBSOCKS ? 43595 : 43594;
+    strcpy(list[3].rsa_exponent, "81f390b2cf8ca7039ee507975951d5a0b15a87bf8b3f99c966834118c50fd94d");
+    strcpy(list[3].rsa_modulus, "88c38748a58228f7261cdc340b5691d7d0975dee0ecdb717609e6bf971eb3fe723ef9d130e4686813739768ad9472eb46d8bfcc042c1a5fcb05e931f632eea5d");
 }
 
 static void worldlist_read_presets(struct mudclient *mud) {
@@ -62,8 +66,11 @@ static void worldlist_read_presets(struct mudclient *mud) {
                     list[i].rsa_exponent, list[i].rsa_modulus);
             }
             fclose(file);
+            mud_log("%s saved\n", path);
         }
         return;
+    } else {
+        mud_log("%s loaded\n", path);
     }
     for (;;) {
         int res = fscanf(file, "%30s %60s %d %500s %500s\n",
@@ -90,8 +97,13 @@ void worldlist_new(mudclient *mud) {
     assert(mud->panel_login_worldlist != NULL);
     panel_new(mud->panel_login_worldlist, mud->surface, 10);
 
+#ifdef __NDS__
+    panel_add_text_centre(
+        mud->panel_login_worldlist, x, y - login_background_height, "Select a world:", FONT_BOLD_12, 1);
+#else
     panel_add_text_centre(
         mud->panel_login_worldlist, x, y, "Select a world:", FONT_BOLD_12, 1);
+#endif
     y += 12;
 
     int button_x = (is_compact ? MUD_MIN_WIDTH : MUD_VANILLA_WIDTH) - 36;
@@ -107,8 +119,13 @@ void worldlist_new(mudclient *mud) {
     mud->control_worldlist_button = panel_add_button(
         mud->panel_login_worldlist, button_x, button_y, 60, 20);
 
+#ifdef __NDS__
+    mud->control_list_worlds = panel_add_text_list_interactive(
+        mud->panel_login_worldlist, x - 50, y - 100, 250, 170, FONT_REGULAR_11, 256, 1);
+#else
     mud->control_list_worlds = panel_add_text_list_interactive(
         mud->panel_login_worldlist, x - 150, y, 250, 170, FONT_REGULAR_11, 256, 1);
+#endif
     worldlist_read_presets(mud);
 
 
@@ -142,7 +159,7 @@ static void worldlist_select(mudclient *mud, int index) {
     strcpy(mud->server, list[index].host);
     strcpy(mud->rsa_exponent, list[index].rsa_exponent);
     strcpy(mud->rsa_modulus, list[index].rsa_modulus);
-    printf("INFO: Changed world to %s\n", list[index].name);
+    printf("Changed world to %s\n", list[index].name);
     mud->port = list[index].port;
     mud->options->last_world = index;
     mud->panel_login_worldlist->control_activated[mud->control_list_worlds] = index;

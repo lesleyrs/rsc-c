@@ -27,6 +27,8 @@
 #endif
 #elif defined(__NDS__)
 #include <nds.h>
+char *get_dirname(const char *full_path);
+extern char* fat_cwd; // blocksds has a func for this
 #else
 #ifdef __SWITCH__
 #include <SDL2/SDL.h>
