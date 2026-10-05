@@ -7,7 +7,7 @@ $(error "Please set DEVKITARM in your environment. export DEVKITARM=<path to>dev
 endif
 
 # These set the information text in the nds file
-#GAME_TITLE     := My Wonderful Homebrew
+GAME_TITLE     := Runescape Classic
 #GAME_SUBTITLE1 := built with devkitARM
 #GAME_SUBTITLE2 := http://devitpro.org
 
@@ -26,7 +26,7 @@ include $(DEVKITARM)/ds_rules
 #---------------------------------------------------------------------------------
 TARGET   := $(shell basename $(CURDIR))
 BUILD    := build
-SOURCES = src src/lib src/lib/rsa src/ui src/custom
+SOURCES   = src src/lib src/lib/rsa src/ui src/custom
 INCLUDES := include
 DATA     := data
 GRAPHICS :=
@@ -40,13 +40,13 @@ NITRO    := nitrofs
 #---------------------------------------------------------------------------------
 # options for code generation
 #---------------------------------------------------------------------------------
-ARCH := -march=armv5te -mtune=arm946e-s
+ARCH := -mthumb -mthumb-interwork -march=armv5te -mtune=arm946e-s
 
 CFLAGS   := -g -Wall -ffunction-sections -fdata-sections\
             $(ARCH) $(INCLUDE) -DARM9
 CFLAGS += -DRENDER_SW -DUSE_TOONSCAPE -DWITH_RSA_LIBTOM
-CFLAGS += -O3 -ffast-math -flto=$(shell nproc)
-# CFLAGS += -O2
+CFLAGS += -O3 -ffast-math -std=gnu11 -flto=$(shell nproc)
+
 CXXFLAGS := $(CFLAGS) -fno-rtti -fno-exceptions
 ASFLAGS  := -g $(ARCH)
 LDFLAGS   = -specs=ds_arm9.specs -g $(ARCH) -Wl,-Map,$(notdir $*.map)
