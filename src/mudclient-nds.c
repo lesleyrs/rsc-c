@@ -7,7 +7,7 @@
 #include "mudclient.h"
 
 void mudclient_start_application(mudclient *mud, char *title) {
-    mud->fb = VRAM_A;
+    mud->fb = VRAM_D; //Moved to VRAM_D so banks A and B can be used as general memory later.
 }
 void nds_init() {
     // NOTE clearing vram is only needed for twilightmenu++ loader
@@ -28,20 +28,22 @@ void nds_init() {
     consoleSetWindow(NULL, 0, 0, 32, 15); // keep console text above keyboard
     keyboardDemoInit();
     // consoleDebugInit(DebugDevice_NOCASH); // has to be disabled on hw for logging errors, need to detect if running in emu?
-    videoSetMode(MODE_FB0);
+    videoSetMode(MODE_FB3);
 
     // NOTE already done above for console/keyboard
     vramSetBankA(VRAM_A_LCD);
     // memset(VRAM_A, 0, SCREEN_WIDTH * SCREEN_HEIGHT * sizeof(uint16_t));
+    //Note VRAM_C is used for text console output
+    vramSetBankB(VRAM_B_LCD);
+    vramSetBankD(VRAM_D_LCD);
 
-    // powerpoint mode
-    // setCpuClock(false);
-
-    if (!isDSiMode()) {
+    if (isDSiMode())
+    {
+	    setCpuClock(true);
+    } else {
         mud_error("[ERROR] NDS detected! only DSi is supported.\n");
         goto err;
     }
-
     // TODO maybe add retry option here
 	if (!Wifi_InitDefault(WFC_CONNECT)) {
         mud_error("[ERROR] Failed to connect!\n");
@@ -191,7 +193,7 @@ void mudclient_poll_events(mudclient *mud) {
 #define unlikely(x)     __builtin_expect((x), 0)
 #define SQRT_MODE_MASK 1
 
-float hw_sqrtf(float x)
+ITCM_CODE float hw_sqrtf(float x)
 {
     if (__builtin_constant_p(x))
         return __builtin_sqrtf(x);
